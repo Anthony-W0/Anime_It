@@ -1,39 +1,67 @@
 //
 //  ProfileHeader.swift
-//  Anime,it
+//  Anime it
 //
-//  Created by Anthony Whitmore on 3/26/26.
-//
+//  Created by Anthony Whitmore
 
-import Foundation
 import SwiftUI
 
-struct ProfileHeader: View {
+struct BioSectionView: View {
     var user: User
     
     var body: some View {
-        HStack {
-            AsyncImage(url: URL(string: user.profileImageURL)) { image in
-                image.resizable()
-            } placeholder: {
-                Color.gray
-            }
-            .frame(width: 80, height: 80)
-            .clipShape(Circle())
+        VStack(alignment: .leading, spacing: 10) {
             
-            VStack(alignment: .leading) {
-                Text(user.displayname)
-                    .font(.title2)
-                    .bold()
-                Text("@\(user.username)")
-                    .foregroundColor(.gray)
-                Text(user.bio)
-                    .font(.caption)
-                    .lineLimit(2)
+            // Profile Image + Name
+            HStack(alignment: .top, spacing: 12) {
+                
+                Image(user.profileImageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 120, height: 120)
+                    .clipShape(Circle())
+                
+                VStack(alignment: .leading) {
+                    Text(user.displayname)
+                        .font(.headline)
+                    
+                    Text("@\(user.username)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
-            Spacer()
+            
+            // Bio Text
+            Text(user.bio)
+                .font(.subheadline)
+            
+            // Link
+            Link(destination: URL(string: user.links)!) {
+                Text(user.links)
+                    .font(.subheadline)
+                    .foregroundStyle(Color("#ffe5c0"))
+            }
+            
+            // Stats Row
+            HStack(spacing: 20) {
+                VStack {
+                    Text("\(user.artworkCount)")
+                    Text("Art")
+                }
+                
+                VStack {
+                    Text("\(user.isFollower)")
+                    Text("Followers")
+                }
+                
+                VStack {
+                    Text("\(user.isFollowing)")
+                    Text("Following")
+                }
+            }
         }
         .padding()
     }
+        
 }
 
