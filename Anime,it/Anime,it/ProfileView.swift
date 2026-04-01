@@ -1,72 +1,55 @@
-//
-//  Untitled.swift
-//  Anime,it
-//
-//  Created by Anthony Whitmore on 3/26/26.
-//
-
-import Foundation
 import SwiftUI
 
 struct ProfileView: View {
     var user: User
-    var portfolioImageURLs: [String] = []
-    let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
+    
+    // Featured image(s) UNDER bio
+    var featuredImageNames: [String] = []
+    
     var body: some View {
         ScrollView {
-            
-            VStack(alignment: .leading) {
+            VStack(spacing: 24) {
                 
-                ProfileHeader(user: user)
-                
-                ProfileStatsView(user: user)
-                
-                Button(action: {
-                    // TODO: Handle edit profile action
-                }) {
-                    Text("Edit Profile")
-                        .font(.headline)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        .background(Color.accentColor.opacity(0.1))
-                        .foregroundStyle(.tint)
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                }
-            }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(Color.gray.opacity(0.2))
-            .cornerRadius(10)
-            .padding(.horizontal)
-            
-            Text("Portfolio")
-                .font(.headline)
-                .padding(.horizontal)
-                .padding(.top)
-            
-            LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(Array(portfolioImageURLs.enumerated()), id: \.offset) { _, urlString in
-                    AsyncImage(url: URL(string: urlString)) { image in
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    } placeholder: {
-                        Color.gray.opacity(0.3)
+                // MARK: - Header + Bio
+                VStack(alignment: .leading, spacing: 12) {
+                    
+                    // Profile header
+                    BioSectionView(user: user)
+                    
+                    
+                    
+                    // Edit Profile button
+                    Button("Edit Profile") 
+                    {
+                        // Action here
                     }
-                    .frame(height: 120)
-                    .clipped()
+                    .frame(maxWidth: .infinity)
+                    .padding(8)
+                    .background(Color(hex: "ffe5c0"))
                     .cornerRadius(8)
+                    
+                    // Featured / bio images
+                    if !featuredImageNames.isEmpty {
+                        VStack(spacing: 16) {
+                            ForEach(featuredImageNames, id: \.self) { imageName in
+                                Image(imageName)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 200)
+                                    .clipped()
+                                    .cornerRadius(12)
+                            }
+                        }
+                    }
                 }
+                .padding()
+                .background(Color(hex: "#FFF7D9"))
+                .cornerRadius(12)
+                .padding(.horizontal)
+                .ignoresSafeArea()
             }
-            .padding(.horizontal)
+            .padding(.top)
         }
     }
 }
 
-#Preview {
-    ProfileView(user: samplerUser)
-}
