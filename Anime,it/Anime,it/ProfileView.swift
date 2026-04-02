@@ -25,7 +25,7 @@ struct ProfileView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(8)
-                    .background(Color(hex: "ffe5c0"))
+                    .background(Color(hex: "#a5d4d9"))
                     .cornerRadius(8)
                     
                     // Featured / bio images
@@ -43,10 +43,9 @@ struct ProfileView: View {
                     }
                 }
                 .padding()
-                .background(Color(hex: "#FFF7D9"))
+                .background(Color(hex: "#c4f0f5"))
                 .cornerRadius(12)
                 .padding(.horizontal)
-                .ignoresSafeArea()
             }
             .padding(.top)
         }
