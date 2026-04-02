@@ -39,7 +39,8 @@ struct BioSectionView: View {
             Link(destination: URL(string: user.links)!) {
                 Text(user.links)
                     .font(.subheadline)
-                    .foregroundStyle(Color("#ffe5c0"))
+                    .foregroundStyle(.secondary)
+                    
             }
             
             // Stats Row
