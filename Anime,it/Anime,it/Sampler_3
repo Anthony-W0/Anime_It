@@ -1,0 +1,29 @@
+//
+//  Usersampler.swift
+//  Anime,it
+//
+//  Created by Anthony Whitmore on 3/26/26.
+//
+
+import SwiftUI
+import UIKit
+
+#Preview {
+    let sampleUser = User(
+        id: "3",
+        username: "DaWoofy",
+        displayname: "Woofy",
+        bio: "Hows yalls day been :3",
+        links: "",
+        profileImageName: "DaWoofy_pfp", // asset name
+        artworkImageName: "Basic work",  // asset name
+        isFollowing: 233,
+        isFollower: 554,
+        artworkCount: 3
+    )
+    
+    return ProfileView(
+        user: sampleUser,
+        featuredImageNames: ["DaWoofy_1", "DaWoofy_2", "DaWoofy_3"] // assets
+    )
+}
