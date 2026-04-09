@@ -17,6 +17,8 @@ struct User: Identifiable {
     var Following: Int
     var Follower: Int
     var post: Int
+
+    let userPosts: [Post]
         
 }
 
