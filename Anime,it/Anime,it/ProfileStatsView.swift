@@ -9,27 +9,27 @@ import Foundation
 import SwiftUI
 
 struct ProfileStatsView: View {
-    var user: User
+    let user: User
+    
     var body: some View {
-        HStack {
-            Spacer()
+        HStack(Spacer: 20) {
             
             VStack {
-                Text("\(user.artworkCount)")
+                Text("\(user.posts)")
                 Text("Posts")
             }
-            Spacer()
+            
             
             VStack {
                 Text("\(user.isFollower)")
                 Text("Followers")
             }
-            Spacer()
+            
             VStack {
                 Text("\(user.isFollowing)")
                 Text("Following")
             }
-            Spacer()
+            
         }
         .padding(.vertical)
     }
