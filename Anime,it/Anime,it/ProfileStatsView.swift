@@ -16,7 +16,7 @@ struct ProfileStatsView: View {
             
             VStack {
                 Text("\(user.artworkCount)")
-                Text("Artwork")
+                Text("Posts")
             }
             Spacer()
             
