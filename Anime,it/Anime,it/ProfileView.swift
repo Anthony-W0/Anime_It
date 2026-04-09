@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ProfileView: View {
+   @StateObject var vm = UserViewModel()
    var body: some View {
        ScrollView {
            VStack(spacing: 16) {
