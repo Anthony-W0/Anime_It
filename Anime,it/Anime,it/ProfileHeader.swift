@@ -7,16 +7,25 @@
 import SwiftUI
 
 struct ProfileHeader: View {
+    let user: User
+    
     var body: some View {
         VStack {
-            Image("profile_picture")
-                .resizable()
-                .frame(width: 80, height: 80)
-                .clipShape(Circle())
+            AsyncImage(url: URL(string: user.profileImage)) 
+            { image in
+                 image
+                     .resizable()
+                     .scaledToFill()
+            } placeholder: {
+                ProgressView()
+            }
+            .frame(width: 80, height: 80)
+            .clipShape(Circle())
+                    
 
-            Text("Username")
+            Text(user.username)
                 .font(.headline)
-            Text("Bio goes here")
+            Text("user.bio")
                 .font(.subheadline)
         }
     }
