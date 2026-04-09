@@ -14,8 +14,8 @@ struct User: Identifiable {
     var bio: String
     var links: String
     var profileImageURL: String
-    var isFollowing: Int
-    var isFollower: Int
+    var Following: Int
+    var Follower: Int
     var post: Int
         
 }
