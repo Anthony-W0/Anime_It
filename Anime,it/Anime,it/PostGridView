@@ -13,7 +13,7 @@ struct PostGridView: View {
         LazyVGrid(columns: columns, spacing: 2) {
             ForEach(posts) { post in
                 
-                AsyncImage(url: URL(string: post.imageUrl)) { image in
+                AsyncImage(url: URL(string: post.profileImageURL)) { image in
                     image
                         .resizable()
                         .scaledToFill()
