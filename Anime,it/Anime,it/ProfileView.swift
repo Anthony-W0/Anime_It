@@ -3,7 +3,7 @@ import SwiftUI
 struct ProfileView: View {
    
    @StateObject var vm = UserViewModel()
-   @Stste private var selectedUser: User?
+   @State private var selectedUser: User?
    
    var body: some View {
       NavigationView {
