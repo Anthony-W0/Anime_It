@@ -1,0 +1,217 @@
+Local_User
+____________________________________________________
+struct LocalUser {
+    var username: String
+    var bio: String
+    var profileImage: UIImage?
+    var followers: Int
+    var following: Int
+    var posts: [UserPost]   // 👈 actual images
+}
+
+_______________________________________________________
+
+
+Full_Profile page
+_________________________________________________________
+import SwiftUI
+import PhotosUI
+
+struct EditableProfileView: View {
+    
+    @State private var user = LocalUser(
+        username: "YourName",
+        bio: "Your bio here...",
+        profileImage: nil,
+        followers: 120,
+        following: 180,
+        posts: []
+    )
+    
+    @State private var selectedItem: PhotosPickerItem?
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                
+                // 👤 Profile Image
+                if let image = user.profileImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .frame(width: 90, height: 90)
+                        .clipShape(Circle())
+                } else {
+                    Circle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 90, height: 90)
+                }
+                
+                // ✏️ Editable Name
+                TextField("Username", text: $user.username)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+                
+                // ✏️ Editable Bio
+                TextField("Bio", text: $user.bio)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+                
+                // 📊 Stats
+                HStack(spacing: 20) {
+                    StatView(value: user.posts.count, title: "Posts")
+                    StatView(value: user.followers, title: "Followers")
+                    StatView(value: user.following, title: "Following")
+                }
+                
+                Divider()
+                
+                // ➕ Add Image Button
+                PhotosPicker(selection: $selectedItem, matching: .images) {
+                    Text("Add Post")
+                        .bold()
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                }
+                
+                // 📸 Grid
+                LazyVGrid(columns: [
+                    GridItem(.flexible()),
+                    GridItem(.flexible()),
+                    GridItem(.flexible())
+                ], spacing: 2) {
+                    
+                    ForEach(user.posts.indices, id: \.self) { index in
+                        Image(uiImage: user.posts[index])
+                            .resizable()
+                            .scaledToFill()
+                            .frame(height: 120)
+                            .clipped()
+                    }
+                }
+            }
+        }
+@State private var selectedPost: UserPost?
+
+ForEach(user.posts) { post in
+    Image(uiImage: post.image)
+        .resizable()
+        .scaledToFill()
+        .frame(height: 120)
+        .clipped()
+        .onTapGesture {
+            selectedPost = post   // 👈 open full screen
+        }
+        .contextMenu {
+            Button(role: .destructive) {
+                deletePost(post)
+            } label: {
+                Text("Delete")
+            }
+        }
+}
+.sheet(item: $selectedPost) { post in
+    ZStack(alignment: .topTrailing) {
+        
+        Color.black.ignoresSafeArea()
+        
+        Image(uiImage: post.image)
+            .resizable()
+            .scaledToFit()
+        
+        Button("Done") {
+            selectedPost = nil
+        }
+        .padding()
+        .foregroundColor(.white)
+    }
+}
+func deletePost(_ post: UserPost) {
+    user.posts.removeAll { $0.id == post.id }
+}
+
+        .onChange(of: selectedItem) {
+            loadImage()
+        }
+    }
+    
+    // 📥 Load Image from Gallery
+    func loadImage() {
+        guard let selectedItem else { return }
+        
+        Task {
+            if let data = try? await selectedItem.loadTransferable(type: Data.self),
+               let uiImage = UIImage(data: data) {
+                
+                DispatchQueue.main.async {
+                    let newPost = UserPost(
+    id: UUID(),
+    image: uiImage,
+    likes: Int.random(in: 0...200)
+)
+
+user.posts.append(newPost)   // 👈 add post
+                }
+            }
+        }
+    }
+}
+
+______________________________________________________________________________________________
+
+Stat View
+__________________________________________________________________________
+struct StatView: View {
+    let value: Int
+    let title: String
+    
+    var body: some View {
+        VStack {
+            Text("\(value)")
+                .font(.headline)
+            Text(title)
+                .font(.caption)
+        }
+    }
+}
+______________________________________________________________
+
+
+Likes
+__________________________________________________
+struct UserPost: Identifiable, Codable {
+    let id: UUID
+    var image: UIImage
+    var likes: Int
+}
+_____________________________________________________
+
+API
+___________________________________________________
+func saveProfile() {
+    guard let url = URL(string: "https://your-api-url/users/1") else { return }
+    
+    let images = user.posts.compactMap { imageToBase64($0.image) }
+    
+    let apiUser = APIUser(
+        username: user.username,
+        bio: user.bio,
+        followers: user.followers,
+        following: user.following,
+        posts: user.posts.count,
+        images: images
+    )
+    
+    guard let data = try? JSONEncoder().encode(apiUser) else { return }
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = "PUT"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpBody = data
+    
+    URLSession.shared.dataTask(with: request).resume()
+}
+__________________________________________
