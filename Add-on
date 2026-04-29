@@ -1,0 +1,80 @@
+ContentView.Swift
+----------------------------------
+  VideoFeedView()   // 👈 NEW TAB
+                .tabItem {
+                    Label("Videos", systemImage: "play.rectangle")
+                }
+-----------------------------
+struct Video: Identifiable, Codable {
+    let id: String
+    let title: String
+    let youtubeURL: String
+    let category: String   // 👈 KEY PART
+}
+----------------------------------------
+ViewModel
+------------------------------
+class VideoViewModel: ObservableObject {
+    @Published var videos: [Video] = []
+    
+    func fetchVideos() {
+        guard let url = URL(string: "https://your-api-url/videos") else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            if let data = data {
+                if let decoded = try? JSONDecoder().decode([Video].self, from: data) {
+                    DispatchQueue.main.async {
+                        self.videos = decoded
+                    }
+                }
+            }
+        }.resume()
+    }
+}
+---------------------------------------------
+VideoFeedView
+________________________________________
+struct VideoFeedView: View {
+    
+    @StateObject var vm = VideoViewModel()
+    
+    var groupedVideos: [String: [Video]] {
+        Dictionary(grouping: vm.videos) { $0.category }
+    }
+    
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(groupedVideos.keys.sorted(), id: \.self) { category in
+                    
+                    Section(header: Text(category)) {
+                        ForEach(groupedVideos[category] ?? []) { video in
+                            VideoRow(video: video)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Tutorial Videos")
+        }
+        .onAppear {
+            vm.fetchVideos()
+        }
+    }
+}
+-------------------------------------
+VideoRow
+--------------------------------------
+struct VideoRow: View {
+    let video: Video
+    
+    var body: some View {
+        Link(destination: URL(string: video.youtubeURL)!) {
+            HStack {
+                Image(systemName: "play.circle.fill")
+                    .font(.title2)
+                
+                Text(video.title)
+            }
+        }
+    }
+}
