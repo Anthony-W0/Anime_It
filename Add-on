@@ -17,19 +17,38 @@ ViewModel
 class VideoViewModel: ObservableObject {
     @Published var videos: [Video] = []
     
-    func fetchVideos() {
-        guard let url = URL(string: "https://your-api-url/videos") else { return }
-        
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            if let data = data {
-                if let decoded = try? JSONDecoder().decode([Video].self, from: data) {
-                    DispatchQueue.main.async {
-                        self.videos = decoded
-                    }
-                }
-            }
-        }.resume()
+func fetchVideos() {
+    guard let url = URL(string: "https://your-api-url/videos") else { 
+        print("❌ Bad URL")
+        return 
     }
+    
+    URLSession.shared.dataTask(with: url) { data, response, error in
+        
+        if let error = error {
+            print("❌ Error:", error)
+            return
+        }
+        
+        guard let data = data else {
+            print("❌ No data returned")
+            return
+        }
+        
+        print("✅ Raw JSON:", String(data: data, encoding: .utf8) ?? "nil")
+        
+        do {
+            let decoded = try JSONDecoder().decode([Video].self, from: data)
+            
+            DispatchQueue.main.async {
+                self.videos = decoded
+                print("✅ Videos loaded:", decoded.count)
+            }
+        } catch {
+            print("❌ Decoding error:", error)
+        }
+        
+    }.resume()
 }
 ---------------------------------------------
 VideoFeedView
