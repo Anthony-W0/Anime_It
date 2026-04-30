@@ -17,38 +17,37 @@ ViewModel
 class VideoViewModel: ObservableObject {
     @Published var videos: [Video] = []
     
-func fetchVideos() {
-    guard let url = URL(string: "https://your-api-url/videos") else { 
-        print("❌ Bad URL")
-        return 
-    }
-    
-    URLSession.shared.dataTask(with: url) { data, response, error in
-        
-        if let error = error {
-            print("❌ Error:", error)
-            return
-        }
-        
-        guard let data = data else {
-            print("❌ No data returned")
-            return
-        }
-        
-        print("✅ Raw JSON:", String(data: data, encoding: .utf8) ?? "nil")
-        
-        do {
-            let decoded = try JSONDecoder().decode([Video].self, from: data)
+    func loadLocalVideos() {
+        videos = [
+            // 🎨 Sketching
+            Video(
+                id: "1",
+                title: "Sketching Basics",
+                youtubeURL: "https://www.youtube.com/watch?v=abc123",
+                category: "Sketching"
+            ),
+            Video(
+                id: "2",
+                title: "Shading Techniques",
+                youtubeURL: "https://www.youtube.com/watch?v=def456",
+                category: "Sketching"
+            ),
             
-            DispatchQueue.main.async {
-                self.videos = decoded
-                print("✅ Videos loaded:", decoded.count)
-            }
-        } catch {
-            print("❌ Decoding error:", error)
-        }
-        
-    }.resume()
+            // 🎨 Painting
+            Video(
+                id: "3",
+                title: "Painting Anime Eyes",
+                youtubeURL: "https://www.youtube.com/watch?v=ghi789",
+                category: "Painting"
+            ),
+            Video(
+                id: "4",
+                title: "Color Blending",
+                youtubeURL: "https://www.youtube.com/watch?v=jkl012",
+                category: "Painting"
+            )
+        ]
+    }
 }
 ---------------------------------------------
 VideoFeedView
