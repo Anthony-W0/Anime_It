@@ -1,0 +1,61 @@
+import SwiftUI
+
+struct VideoFeedView: View {
+    
+    @StateObject var vm = VideoViewModel()
+    
+    // 🔥 Group videos by category
+    var groupedVideos: [String: [Video]] {
+        Dictionary(grouping: vm.videos) { $0.category }
+    }
+    
+    var body: some View {
+        NavigationView {
+            List {
+                
+                ForEach(groupedVideos.keys.sorted(), id: \.self) { category in
+                    
+                    Section(header: Text(category).font(.headline)) {
+                        
+                        ForEach(groupedVideos[category] ?? []) { video in
+                            VideoRow(video: video)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Tutorial Videos")
+        }
+        .onAppear {
+            vm.loadLocalVideos()   // 👈 using local data
+        }
+    }
+}
+
+import SwiftUI
+
+struct VideoRow: View {
+    let video: Video
+    
+    var body: some View {
+        Link(destination: URL(string: video.youtubeURL)!) {
+            HStack(spacing: 12) {
+                
+                Image(systemName: "play.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(.red)
+                
+                Text(video.title)
+                    .foregroundColor(.primary)
+            }
+            .padding(.vertical, 4)
+        }
+    }
+}
+VideoRow
+AsyncImage(url: URL(string: getThumbnail(from: video.youtubeURL))) { image in
+    image.resizable()
+} placeholder: {
+    Color.gray
+}
+.frame(width: 100, height: 60)
+.cornerRadius(8)
